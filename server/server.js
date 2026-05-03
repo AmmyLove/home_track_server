@@ -20,13 +20,28 @@ dotenv.config();
 const app = express();
 
 // Middleware — this lets your server read JSON from requests
+// app.use(cors({
+//   origin: [
+//     "http://localhost:5173",                
+//     "https://hometrack.razeb.com",         
+//   ],
+//   credentials: true,
+// }));
+
+const allowedOrigins = ["http://localhost:5173", "https://hometrack.razeb.com"];
+
 app.use(cors({
-  origin: [
-    "http://localhost:5173",                
-    "https://hometrack.razeb.com",         
-  ],
+  origin: function (origin, callback) {
+    // allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) === -1) {
+      return callback(new Error('CORS policy: This origin is not allowed'), false);
+    }
+    return callback(null, true);
+  },
   credentials: true,
 }));
+
 
 app.use(express.json());
 
